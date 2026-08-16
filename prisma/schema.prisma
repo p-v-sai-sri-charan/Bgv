@@ -1,0 +1,256 @@
+// Prisma schema for the multi-tenant BGV (Background Verification) platform.
+// docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum TenantCategory {
+  MNC
+  MART
+  MALL
+  BANK
+  PETROL_BUNK
+  INDUSTRY
+}
+
+enum FlowType {
+  MNC_COMPREHENSIVE
+  STANDARD
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  EMPLOYER_ADMIN
+  EMPLOYEE
+  AGENT
+}
+
+enum CaseStatus {
+  DRAFT
+  DOCS_PENDING
+  IN_REVIEW
+  MANUAL_REVIEW
+  FLAGGED
+  COMPLETED
+  REJECTED
+}
+
+enum DocumentType {
+  AADHAR
+  PAN
+  PERMANENT_ADDRESS_PROOF
+  CURRENT_ADDRESS_PROOF
+  PAYSLIP
+  EXPERIENCE_LETTER
+  RELIEVING_LETTER
+  FORM_16
+  LOCAL_PROOF
+  WITNESS_STATEMENT
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  AUTO_VERIFIED
+  MANUAL_VERIFIED
+  REJECTED
+  FLAGGED
+}
+
+enum CheckMethod {
+  AUTO_API
+  MANUAL
+}
+
+enum NotificationChannel {
+  EMAIL
+  WHATSAPP
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+enum NotificationEvent {
+  CASE_CREATED
+  DOCUMENT_UPLOADED
+  DOCUMENT_REJECTED
+  CASE_COMPLETED
+  CASE_REJECTED
+  REVERIFICATION_DUE
+  REVERIFICATION_CASE_CREATED
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model Tenant {
+  id           String         @id @default(cuid())
+  name         String
+  slug         String         @unique
+  category     TenantCategory
+  contactEmail String
+  contactPhone String?
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  users     User[]
+  employees Employee[]
+  cases     BgvCase[]
+
+  @@index([category])
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?
+  passwordHash String
+  name         String
+  role         UserRole
+  tenantId     String?
+  tenant       Tenant?   @relation(fields: [tenantId], references: [id])
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  employeeProfile    Employee?
+  agentAssignments   AgentAssignment[]
+  verificationChecks VerificationCheck[] @relation("CheckVerifiedBy")
+
+  @@index([tenantId])
+  @@index([role])
+}
+
+model Employee {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id])
+  tenantId         String
+  tenant           Tenant    @relation(fields: [tenantId], references: [id])
+  fullName         String
+  aadharNumber     String?
+  panNumber        String?
+  permanentAddress String?
+  currentAddress   String?
+  dateOfJoining    DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  cases BgvCase[]
+
+  @@index([tenantId])
+}
+
+model BgvCase {
+  id                       String     @id @default(cuid())
+  tenantId                 String
+  tenant                   Tenant     @relation(fields: [tenantId], references: [id])
+  employeeId               String
+  employee                 Employee   @relation(fields: [employeeId], references: [id])
+  flowType                 FlowType
+  status                   CaseStatus @default(DRAFT)
+  isReverification         Boolean    @default(false)
+  previousCaseId           String?    @unique
+  previousCase             BgvCase?   @relation("CaseReverification", fields: [previousCaseId], references: [id])
+  nextCase                 BgvCase?   @relation("CaseReverification")
+  initiatedAt              DateTime   @default(now())
+  completedAt              DateTime?
+  nextReverificationDueAt  DateTime?
+  reverificationNotifiedAt DateTime?
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+
+  documents     Document[]
+  checks        VerificationCheck[]
+  assignments   AgentAssignment[]
+  notifications NotificationLog[]
+
+  @@index([tenantId, status])
+  @@index([employeeId])
+  @@index([nextReverificationDueAt])
+}
+
+model Document {
+  id         String         @id @default(cuid())
+  caseId     String
+  case       BgvCase        @relation(fields: [caseId], references: [id])
+  type       DocumentType
+  fileName   String
+  storageKey String
+  mimeType   String
+  fileSize   Int
+  status     DocumentStatus @default(PENDING)
+  uploadedAt DateTime       @default(now())
+
+  check VerificationCheck?
+
+  @@index([caseId])
+  @@index([caseId, type])
+}
+
+model VerificationCheck {
+  id               String         @id @default(cuid())
+  caseId           String
+  case             BgvCase        @relation(fields: [caseId], references: [id])
+  documentId       String?        @unique
+  document         Document?      @relation(fields: [documentId], references: [id])
+  checkType        DocumentType
+  method           CheckMethod
+  status           DocumentStatus @default(PENDING)
+  providerName     String?
+  providerResponse Json?
+  notes            String?
+  verifiedById     String?
+  verifiedBy       User?          @relation("CheckVerifiedBy", fields: [verifiedById], references: [id])
+  verifiedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([caseId])
+  @@index([status])
+}
+
+model AgentAssignment {
+  id           String    @id @default(cuid())
+  caseId       String
+  case         BgvCase   @relation(fields: [caseId], references: [id])
+  agentId      String
+  agent        User      @relation(fields: [agentId], references: [id])
+  assignedAt   DateTime  @default(now())
+  unassignedAt DateTime?
+
+  @@index([caseId])
+  @@index([agentId])
+}
+
+model NotificationLog {
+  id        String              @id @default(cuid())
+  caseId    String?
+  case      BgvCase?            @relation(fields: [caseId], references: [id])
+  event     NotificationEvent
+  channel   NotificationChannel
+  recipient String
+  subject   String?
+  body      String
+  status    NotificationStatus  @default(QUEUED)
+  error     String?
+  sentAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([caseId])
+}
