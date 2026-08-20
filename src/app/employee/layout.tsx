@@ -1,3 +1,4 @@
+import { IconClipboardList } from "@/components/icons";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { requireSession } from "@/lib/rbac";
 
@@ -9,7 +10,13 @@ export default async function EmployeeLayout({
   return (
     <DashboardShell
       title="Employee"
-      navItems={[{ href: "/employee", label: "My Verification" }]}
+      navItems={[
+        {
+          href: "/employee",
+          label: "My Verification",
+          icon: <IconClipboardList />,
+        },
+      ]}
       userName={session.name}
       userRoleLabel="Employee"
     >

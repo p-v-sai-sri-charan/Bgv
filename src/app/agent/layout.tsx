@@ -1,3 +1,4 @@
+import { IconShieldCheck } from "@/components/icons";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { requireSession } from "@/lib/rbac";
 
@@ -9,7 +10,9 @@ export default async function AgentLayout({
   return (
     <DashboardShell
       title="Agent"
-      navItems={[{ href: "/agent", label: "Review Queue" }]}
+      navItems={[
+        { href: "/agent", label: "Review Queue", icon: <IconShieldCheck /> },
+      ]}
       userName={session.name}
       userRoleLabel="Verification Agent"
     >

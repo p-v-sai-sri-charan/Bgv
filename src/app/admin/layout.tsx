@@ -1,3 +1,4 @@
+import { IconBuilding, IconUserCog } from "@/components/icons";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { requireSession } from "@/lib/rbac";
 
@@ -10,8 +11,8 @@ export default async function AdminLayout({
     <DashboardShell
       title="Platform Admin"
       navItems={[
-        { href: "/admin", label: "Tenants" },
-        { href: "/admin/agents", label: "Agents" },
+        { href: "/admin", label: "Tenants", icon: <IconBuilding /> },
+        { href: "/admin/agents", label: "Agents", icon: <IconUserCog /> },
       ]}
       userName={session.name}
       userRoleLabel="Super Admin"

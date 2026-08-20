@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 export interface NavItem {
   href: string;
   label: string;
+  icon: ReactNode;
 }
 
 export function DashboardShell({
@@ -22,7 +23,7 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full bg-white">
       <aside className="hidden w-56 shrink-0 border-r border-slate-200 bg-white md:flex md:flex-col">
         <div className="border-b border-slate-200 px-5 py-5">
           <p className="text-sm font-semibold text-slate-900">BGV Platform</p>
@@ -33,8 +34,9 @@ export function DashboardShell({
             <Link
               key={item.href}
               href={item.href}
-              className="block rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             >
+              <span className="text-blue-900">{item.icon}</span>
               {item.label}
             </Link>
           ))}
@@ -60,7 +62,7 @@ export function DashboardShell({
             </form>
           </div>
         </header>
-        <main className="flex-1 bg-slate-50 p-6">{children}</main>
+        <main className="flex-1 bg-white p-6">{children}</main>
       </div>
     </div>
   );

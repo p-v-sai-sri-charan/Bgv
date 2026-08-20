@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 const VARIANTS = {
   primary:
-    "bg-slate-900 text-white hover:bg-slate-800 disabled:bg-slate-300",
+    "bg-gradient-to-r from-blue-400 to-blue-100 text-blue-50 shadow-sm hover:from-blue-500 hover:to-blue-200 disabled:from-blue-200 disabled:to-blue-50 disabled:text-blue-100",
   secondary:
     "bg-white text-slate-900 border border-slate-300 hover:bg-slate-50 disabled:text-slate-400",
   danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300",

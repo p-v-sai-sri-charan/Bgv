@@ -1,4 +1,10 @@
 import Link from "next/link";
+import {
+  IconClock,
+  IconFileCheck,
+  IconShieldCheck,
+  IconUsers,
+} from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma";
@@ -30,10 +36,22 @@ export default async function EmployerOverviewPage() {
     statusCounts.find((s) => s.status === status)?._count._all ?? 0;
 
   const stats = [
-    { label: "Total employees", value: employeeCount },
-    { label: "Documents pending", value: countFor("DOCS_PENDING") },
-    { label: "In manual review", value: countFor("MANUAL_REVIEW") },
-    { label: "Completed", value: countFor("COMPLETED") },
+    { label: "Total employees", value: employeeCount, icon: <IconUsers /> },
+    {
+      label: "Documents pending",
+      value: countFor("DOCS_PENDING"),
+      icon: <IconClock />,
+    },
+    {
+      label: "In manual review",
+      value: countFor("MANUAL_REVIEW"),
+      icon: <IconShieldCheck />,
+    },
+    {
+      label: "Completed",
+      value: countFor("COMPLETED"),
+      icon: <IconFileCheck />,
+    },
   ];
 
   return (
@@ -48,11 +66,14 @@ export default async function EmployerOverviewPage() {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.label}>
-            <CardContent className="py-5">
-              <p className="text-2xl font-semibold text-slate-900">
-                {stat.value}
-              </p>
-              <p className="text-sm text-slate-500">{stat.label}</p>
+            <CardContent className="flex items-start justify-between py-5">
+              <div>
+                <p className="text-2xl font-semibold text-slate-900">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-slate-500">{stat.label}</p>
+              </div>
+              <span className="text-blue-900">{stat.icon}</span>
             </CardContent>
           </Card>
         ))}

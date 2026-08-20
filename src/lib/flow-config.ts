@@ -23,8 +23,10 @@ export const CATEGORY_FLOW_TYPE: Record<TenantCategory, FlowType> = {
 const BASE_IDENTITY_DOCS: DocumentType[] = [
   DocumentType.AADHAR,
   DocumentType.PAN,
+  DocumentType.PASSPORT,
   DocumentType.PERMANENT_ADDRESS_PROOF,
   DocumentType.CURRENT_ADDRESS_PROOF,
+  DocumentType.HIGHER_QUALIFICATION,
 ];
 
 const MNC_EMPLOYMENT_DOCS: DocumentType[] = [
@@ -76,8 +78,10 @@ export function getFlowType(category: TenantCategory): FlowType {
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   AADHAR: "Aadhar Card",
   PAN: "PAN Card",
+  PASSPORT: "Passport",
   PERMANENT_ADDRESS_PROOF: "Permanent Address Proof",
   CURRENT_ADDRESS_PROOF: "Current Address Proof",
+  HIGHER_QUALIFICATION: "Higher Qualification Certificate",
   PAYSLIP: "Payslip",
   EXPERIENCE_LETTER: "Experience Letter",
   RELIEVING_LETTER: "Relieving Letter",
