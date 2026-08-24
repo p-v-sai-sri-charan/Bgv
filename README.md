@@ -116,3 +116,12 @@ were used to get the details right, e.g.:
 - Next 16 replaced `middleware.ts` with `proxy.ts` (`src/proxy.ts` here).
 - Prisma 7 requires a driver adapter (`@prisma/adapter-pg`) rather than a bare
   `new PrismaClient()`.
+
+
+I've created .env from the template — it's gitignored, so it stays local. Once you point it at a real database, this should get you running:
+
+Edit DATABASE_URL (and ideally AUTH_SECRET) in .env for your Postgres instance.
+npx prisma migrate deploy (or migrate dev if it's a fresh DB) to create the schema.
+npx prisma db seed (or npx tsx prisma/seed.ts) to load test users — check prisma/seed.ts for the credentials it creates.
+npm run dev and log in.
+Let me know once the database's up if you want me to verify login and screenshot the dashboards — that'll complete the visual check I couldn't do without one.

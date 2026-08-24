@@ -1,5 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
 import { CASE_STATUS_LABELS, CASE_STATUS_TONE } from "@/lib/status-labels";
@@ -29,22 +37,24 @@ export default async function EmployerEmployeesPage() {
           {employees.length === 0 ? (
             <p className="text-sm text-slate-500">No employees yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Name</th>
-                  <th className="pb-2 font-medium">Email</th>
-                  <th className="pb-2 font-medium">Verification status</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Name</TableHeaderCell>
+                  <TableHeaderCell>Email</TableHeaderCell>
+                  <TableHeaderCell>Verification status</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {employees.map((employee) => {
                   const latestCase = employee.cases[0];
                   return (
-                    <tr key={employee.id} className="border-b border-slate-100">
-                      <td className="py-2">{employee.fullName}</td>
-                      <td className="py-2">{employee.user.email}</td>
-                      <td className="py-2">
+                    <TableRow key={employee.id}>
+                      <TableCell className="font-medium text-slate-900">
+                        {employee.fullName}
+                      </TableCell>
+                      <TableCell>{employee.user.email}</TableCell>
+                      <TableCell>
                         {latestCase ? (
                           <Badge tone={CASE_STATUS_TONE[latestCase.status]}>
                             {CASE_STATUS_LABELS[latestCase.status]}
@@ -52,12 +62,12 @@ export default async function EmployerEmployeesPage() {
                         ) : (
                           <Badge tone="neutral">No case</Badge>
                         )}
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

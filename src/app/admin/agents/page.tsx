@@ -1,4 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { AgentForm } from "./agent-form";
 
@@ -10,6 +18,15 @@ export default async function AdminAgentsPage() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-lg font-semibold tracking-tight text-slate-900">
+          Agents
+        </h1>
+        <p className="text-sm text-slate-500">
+          Verification agents who review manual checks.
+        </p>
+      </div>
+
       <AgentForm />
 
       <Card>
@@ -20,22 +37,24 @@ export default async function AdminAgentsPage() {
           {agents.length === 0 ? (
             <p className="text-sm text-slate-500">No agents yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Name</th>
-                  <th className="pb-2 font-medium">Email</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Name</TableHeaderCell>
+                  <TableHeaderCell>Email</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {agents.map((agent) => (
-                  <tr key={agent.id} className="border-b border-slate-100">
-                    <td className="py-2">{agent.name}</td>
-                    <td className="py-2">{agent.email}</td>
-                  </tr>
+                  <TableRow key={agent.id}>
+                    <TableCell className="font-medium text-slate-900">
+                      {agent.name}
+                    </TableCell>
+                    <TableCell>{agent.email}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

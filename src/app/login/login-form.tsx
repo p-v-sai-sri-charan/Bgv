@@ -16,7 +16,7 @@ export function LoginForm() {
   return (
     <form
       action={formAction}
-      className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+      className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/[0.03] sm:p-7"
     >
       <div>
         <Label htmlFor="email">Email</Label>
@@ -39,7 +39,11 @@ export function LoginForm() {
           autoComplete="current-password"
         />
       </div>
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && (
+        <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/10">
+          {state.error}
+        </p>
+      )}
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Signing in..." : "Sign in"}
       </Button>

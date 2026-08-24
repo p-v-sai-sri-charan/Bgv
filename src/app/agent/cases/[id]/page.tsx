@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/input";
 import { TENANT_CATEGORY_LABELS } from "@/lib/flow-config";
 import { getCaseChecklist } from "@/lib/case-service";
 import { prisma } from "@/lib/prisma";
@@ -71,7 +72,7 @@ export default async function AgentCaseReviewPage({
             return (
               <div
                 key={item.type}
-                className="rounded-md border border-slate-200 p-4"
+                className="rounded-lg border border-slate-200 p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -83,7 +84,7 @@ export default async function AgentCaseReviewPage({
                         href={`/api/documents/${item.document.id}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-xs text-blue-600 hover:underline"
+                        className="text-xs text-indigo-600 hover:underline"
                       >
                         {item.document.fileName}
                       </a>
@@ -106,11 +107,10 @@ export default async function AgentCaseReviewPage({
                     <input type="hidden" name="checkId" value={item.check!.id} />
                     <input type="hidden" name="caseId" value={id} />
                     <div className="min-w-48 flex-1">
-                      <textarea
+                      <Textarea
                         name="notes"
                         placeholder="Notes (optional)"
                         rows={1}
-                        className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
                       />
                     </div>
                     <Button type="submit" name="decision" value="VERIFIED">

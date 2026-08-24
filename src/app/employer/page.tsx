@@ -7,6 +7,14 @@ import {
 } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
 import { CASE_STATUS_LABELS, CASE_STATUS_TONE } from "@/lib/status-labels";
@@ -68,12 +76,14 @@ export default async function EmployerOverviewPage() {
           <Card key={stat.label}>
             <CardContent className="flex items-start justify-between py-5">
               <div>
-                <p className="text-2xl font-semibold text-slate-900">
+                <p className="text-2xl font-semibold tracking-tight text-slate-900">
                   {stat.value}
                 </p>
                 <p className="text-sm text-slate-500">{stat.label}</p>
               </div>
-              <span className="text-blue-900">{stat.icon}</span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                {stat.icon}
+              </span>
             </CardContent>
           </Card>
         ))}
@@ -87,39 +97,41 @@ export default async function EmployerOverviewPage() {
           {recentCases.length === 0 ? (
             <p className="text-sm text-slate-500">No cases yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Employee</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Initiated</th>
-                  <th className="pb-2 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Employee</TableHeaderCell>
+                  <TableHeaderCell>Status</TableHeaderCell>
+                  <TableHeaderCell>Initiated</TableHeaderCell>
+                  <TableHeaderCell />
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {recentCases.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-100">
-                    <td className="py-2">{c.employee.fullName}</td>
-                    <td className="py-2">
+                  <TableRow key={c.id}>
+                    <TableCell className="font-medium text-slate-900">
+                      {c.employee.fullName}
+                    </TableCell>
+                    <TableCell>
                       <Badge tone={CASE_STATUS_TONE[c.status]}>
                         {CASE_STATUS_LABELS[c.status]}
                       </Badge>
-                    </td>
-                    <td className="py-2">
+                    </TableCell>
+                    <TableCell>
                       {c.initiatedAt.toLocaleDateString("en-IN")}
-                    </td>
-                    <td className="py-2 text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <Link
                         href={`/employer/cases/${c.id}`}
-                        className="text-sm font-medium text-slate-700 hover:underline"
+                        className="font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
                       >
                         View
                       </Link>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

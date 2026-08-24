@@ -69,7 +69,11 @@ export function UploadForm({
       <Button type="submit" variant="secondary" disabled={submitting}>
         {submitting ? "Uploading..." : "Upload"}
       </Button>
-      {error && <p className="w-full text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="w-full rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/10">
+          {error}
+        </p>
+      )}
     </form>
   );
 }

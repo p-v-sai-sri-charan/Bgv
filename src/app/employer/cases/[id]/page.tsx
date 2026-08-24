@@ -76,7 +76,7 @@ export default async function EmployerCaseDetailPage({
           {checklist.map((item) => (
             <div
               key={item.type}
-              className="flex items-center justify-between rounded-md border border-slate-200 p-3"
+              className="flex items-center justify-between rounded-lg border border-slate-200 p-3"
             >
               <div>
                 <p className="text-sm font-medium text-slate-900">

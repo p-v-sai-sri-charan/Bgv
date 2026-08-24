@@ -1,5 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@/components/ui/table";
 import { getCaseChecklist } from "@/lib/case-service";
 import { TENANT_CATEGORY_LABELS } from "@/lib/flow-config";
 import { prisma } from "@/lib/prisma";
@@ -88,7 +96,7 @@ export default async function EmployeeDashboardPage() {
             {checklist.map((item) => (
               <div
                 key={item.type}
-                className="rounded-md border border-slate-200 p-4"
+                className="rounded-lg border border-slate-200 p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-medium text-slate-900">
@@ -109,7 +117,7 @@ export default async function EmployeeDashboardPage() {
                 )}
                 {item.check?.notes &&
                   item.check.status === "REJECTED" && (
-                    <p className="mt-1 text-xs text-red-600">
+                    <p className="mt-1 text-xs text-rose-600">
                       {item.check.notes}
                     </p>
                   )}
@@ -132,34 +140,34 @@ export default async function EmployeeDashboardPage() {
             <CardTitle>Verification history</CardTitle>
           </CardHeader>
           <CardContent>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Initiated</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Completed</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>Initiated</TableHeaderCell>
+                  <TableHeaderCell>Status</TableHeaderCell>
+                  <TableHeaderCell>Completed</TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {historyCases.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-100">
-                    <td className="py-2">
+                  <TableRow key={c.id}>
+                    <TableCell>
                       {c.initiatedAt.toLocaleDateString("en-IN")}
-                    </td>
-                    <td className="py-2">
+                    </TableCell>
+                    <TableCell>
                       <Badge tone={CASE_STATUS_TONE[c.status]}>
                         {CASE_STATUS_LABELS[c.status]}
                       </Badge>
-                    </td>
-                    <td className="py-2">
+                    </TableCell>
+                    <TableCell>
                       {c.completedAt
                         ? c.completedAt.toLocaleDateString("en-IN")
                         : "-"}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}

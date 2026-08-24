@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from "@/components/ui/table";
 import { TENANT_CATEGORY_LABELS } from "@/lib/flow-config";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
@@ -61,42 +69,42 @@ export default async function AgentQueuePage() {
             Nothing waiting for manual review right now.
           </p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 text-left text-slate-500">
-                <th className="pb-2 font-medium">Employee</th>
-                <th className="pb-2 font-medium">Employer</th>
-                <th className="pb-2 font-medium">Pending items</th>
-                <th className="pb-2 font-medium">Waiting since</th>
-                <th className="pb-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Employee</TableHeaderCell>
+                <TableHeaderCell>Employer</TableHeaderCell>
+                <TableHeaderCell>Pending items</TableHeaderCell>
+                <TableHeaderCell>Waiting since</TableHeaderCell>
+                <TableHeaderCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {rows.map((row) => (
-                <tr key={row.caseId} className="border-b border-slate-100">
-                  <td className="py-2">{row.employeeName}</td>
-                  <td className="py-2">
+                <TableRow key={row.caseId}>
+                  <TableCell className="font-medium text-slate-900">
+                    {row.employeeName}
+                  </TableCell>
+                  <TableCell>
                     {row.tenantName}{" "}
                     <Badge tone="neutral" className="ml-1">
                       {row.category}
                     </Badge>
-                  </td>
-                  <td className="py-2">{row.count}</td>
-                  <td className="py-2">
-                    {row.oldest.toLocaleDateString("en-IN")}
-                  </td>
-                  <td className="py-2 text-right">
+                  </TableCell>
+                  <TableCell>{row.count}</TableCell>
+                  <TableCell>{row.oldest.toLocaleDateString("en-IN")}</TableCell>
+                  <TableCell className="text-right">
                     <Link
                       href={`/agent/cases/${row.caseId}`}
-                      className="text-sm font-medium text-slate-700 hover:underline"
+                      className="font-medium text-indigo-600 hover:text-indigo-700 hover:underline"
                     >
                       Review
                     </Link>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>

@@ -40,10 +40,12 @@ export function AddEmployeeForm() {
           </div>
         </form>
         {state?.error && (
-          <p className="mt-3 text-sm text-red-600">{state.error}</p>
+          <p className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-inset ring-rose-600/10">
+            {state.error}
+          </p>
         )}
         {state?.success && (
-          <div className="mt-3 rounded-md bg-emerald-50 p-3 text-sm text-emerald-800">
+          <div className="mt-3 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800 ring-1 ring-inset ring-emerald-600/10">
             <p className="font-medium">Employee added.</p>
             <p>
               Share these credentials securely — login:{" "}

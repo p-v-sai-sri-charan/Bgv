@@ -3,11 +3,13 @@ import { cn } from "@/lib/utils";
 
 const VARIANTS = {
   primary:
-    "bg-gradient-to-r from-blue-400 to-blue-100 text-blue-50 shadow-sm hover:from-blue-500 hover:to-blue-200 disabled:from-blue-200 disabled:to-blue-50 disabled:text-blue-100",
+    "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 active:bg-indigo-700 disabled:bg-indigo-300 disabled:shadow-none",
   secondary:
-    "bg-white text-slate-900 border border-slate-300 hover:bg-slate-50 disabled:text-slate-400",
-  danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300",
-  ghost: "text-slate-600 hover:bg-slate-100 disabled:text-slate-300",
+    "bg-white text-slate-700 border border-slate-300 shadow-sm hover:bg-slate-50 hover:text-slate-900 disabled:text-slate-400 disabled:bg-slate-50",
+  danger:
+    "bg-rose-600 text-white shadow-sm hover:bg-rose-500 active:bg-rose-700 disabled:bg-rose-300 disabled:shadow-none",
+  ghost:
+    "text-slate-600 hover:bg-slate-100 hover:text-slate-900 disabled:text-slate-300",
 } as const;
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -20,7 +22,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       type={type}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed",
+        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors motion-safe:active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:pointer-events-none disabled:cursor-not-allowed",
         VARIANTS[variant],
         className,
       )}

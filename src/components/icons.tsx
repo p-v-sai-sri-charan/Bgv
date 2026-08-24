@@ -3,7 +3,7 @@ import type { SVGProps } from "react";
 /**
  * Minimal hand-rolled stroke icon set (no external icon library dependency).
  * All icons default to `currentColor` — set text color on the wrapper/props
- * to recolor (e.g. `className="text-blue-900"`).
+ * to recolor (e.g. `className="text-indigo-600"`).
  */
 function iconProps(props: SVGProps<SVGSVGElement>): SVGProps<SVGSVGElement> {
   return {
