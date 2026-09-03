@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  IconArrowRight,
   IconClock,
   IconFileCheck,
   IconShieldCheck,
@@ -7,6 +8,8 @@ import {
 } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState, PageHeader } from "@/components/ui/page-header";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
 import { CASE_STATUS_LABELS, CASE_STATUS_TONE } from "@/lib/status-labels";
@@ -56,24 +59,23 @@ export default async function EmployerOverviewPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900">
-          {tenant.name}
-        </h1>
-        <p className="text-sm text-slate-500">Verification overview</p>
-      </div>
+      <PageHeader title={tenant.name} description="Verification overview" />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.label}>
+          <Card key={stat.label} interactive>
             <CardContent className="flex items-start justify-between py-5">
               <div>
-                <p className="text-2xl font-semibold text-slate-900">
+                <p className="text-2xl font-semibold tracking-tight text-foreground">
                   {stat.value}
                 </p>
-                <p className="text-sm text-slate-500">{stat.label}</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  {stat.label}
+                </p>
               </div>
-              <span className="text-blue-900">{stat.icon}</span>
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                {stat.icon}
+              </span>
             </CardContent>
           </Card>
         ))}
@@ -82,44 +84,53 @@ export default async function EmployerOverviewPage() {
       <Card>
         <CardHeader>
           <CardTitle>Recent verification cases</CardTitle>
+          <Link
+            href="/employer/cases"
+            className="inline-flex items-center gap-1 text-[13px] font-medium text-brand-600 transition-colors hover:text-brand-700"
+          >
+            All cases
+            <IconArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </CardHeader>
         <CardContent>
           {recentCases.length === 0 ? (
-            <p className="text-sm text-slate-500">No cases yet.</p>
+            <EmptyState
+              title="No cases yet"
+              description="Cases appear here as soon as you onboard an employee."
+              icon={<IconFileCheck />}
+            />
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Employee</th>
-                  <th className="pb-2 font-medium">Status</th>
-                  <th className="pb-2 font-medium">Initiated</th>
-                  <th className="pb-2 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <Thead>
+                <Th>Employee</Th>
+                <Th>Status</Th>
+                <Th>Initiated</Th>
+                <Th className="text-right">Case</Th>
+              </Thead>
+              <Tbody>
                 {recentCases.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-100">
-                    <td className="py-2">{c.employee.fullName}</td>
-                    <td className="py-2">
-                      <Badge tone={CASE_STATUS_TONE[c.status]}>
+                  <Tr key={c.id}>
+                    <Td className="font-medium">{c.employee.fullName}</Td>
+                    <Td>
+                      <Badge tone={CASE_STATUS_TONE[c.status]} dot>
                         {CASE_STATUS_LABELS[c.status]}
                       </Badge>
-                    </td>
-                    <td className="py-2">
+                    </Td>
+                    <Td className="text-muted-foreground">
                       {c.initiatedAt.toLocaleDateString("en-IN")}
-                    </td>
-                    <td className="py-2 text-right">
+                    </Td>
+                    <Td className="text-right">
                       <Link
                         href={`/employer/cases/${c.id}`}
-                        className="text-sm font-medium text-slate-700 hover:underline"
+                        className="text-[13px] font-medium text-brand-600 hover:text-brand-700"
                       >
                         View
                       </Link>
-                    </td>
-                  </tr>
+                    </Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           )}
         </CardContent>
       </Card>

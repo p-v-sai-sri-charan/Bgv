@@ -36,13 +36,41 @@ WhatsApp.
 
 ## Getting started
 
+PostgreSQL always runs inside Docker — there is no supported path that installs
+it on the host. Pick one of the two workflows below.
+
+### Local development (DB in Docker, app on the host)
+
 ```bash
+docker compose -f docker-compose.dev.yml up -d   # Postgres only, on localhost:5432
 npm install
-cp .env.example .env   # fill in DATABASE_URL, AUTH_SECRET, CRON_SECRET
-npx prisma migrate dev # creates the schema
-npx prisma db seed     # sample tenants/employees/cases across every scenario
+cp .env.example .env    # DATABASE_URL already points at the container; set AUTH_SECRET, CRON_SECRET
+npx prisma migrate dev  # creates the schema
+npx prisma db seed      # sample tenants/employees/cases across every scenario
 npm run dev
 ```
+
+`docker compose -f docker-compose.dev.yml down` stops it; add `-v` to wipe the data.
+
+### Full stack in Docker
+
+```bash
+docker compose up --build
+```
+
+This starts three services:
+
+| Service   | Role |
+|---|---|
+| `db`      | PostgreSQL 17. **Not published to the host** — reachable only on the compose network as `db:5432`. |
+| `migrate` | One-shot job: `prisma migrate deploy` then `prisma db seed`, then exits. |
+| `app`     | The Next.js server (standalone build) on <http://localhost:3000>. |
+
+Override secrets with a sibling `.env` file or shell environment
+(`POSTGRES_PASSWORD`, `AUTH_SECRET`, `CRON_SECRET`, `APP_PORT`, …). Uploaded
+documents and the database each live in a named volume; `docker compose down -v`
+wipes both. To get a database shell without exposing a port:
+`docker compose exec db psql -U bgv`.
 
 Seed data covers all six tenant categories, each with:
 - a fresh employee with no documents uploaded yet (`DOCS_PENDING`)

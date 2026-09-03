@@ -36,15 +36,21 @@ export function AgentForm() {
           </div>
         </form>
         {state?.error && (
-          <p className="mt-3 text-sm text-red-600">{state.error}</p>
+          <p className="mt-3 animate-fade-in rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+            {state.error}
+          </p>
         )}
         {state?.success && (
-          <div className="mt-3 rounded-md bg-emerald-50 p-3 text-sm text-emerald-800">
+          <div className="mt-3 animate-fade-in rounded-lg border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-800">
             <p>
               Agent login:{" "}
-              <span className="font-mono">{state.success.email}</span>,
-              temporary password:{" "}
-              <span className="font-mono">{state.success.tempPassword}</span>
+              <span className="font-mono text-emerald-900">
+                {state.success.email}
+              </span>
+              , temporary password:{" "}
+              <span className="font-mono text-emerald-900">
+                {state.success.tempPassword}
+              </span>
             </p>
           </div>
         )}

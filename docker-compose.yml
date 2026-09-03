@@ -1,0 +1,82 @@
+# BGV platform — fully containerised stack.
+#
+# PostgreSQL runs ONLY as the `db` service on the private compose network;
+# nothing on the host needs (or gets) a local Postgres install. The app and
+# the migration job reach it at host `db`, port 5432, over that network.
+#
+#   docker compose up --build        # start db + run migrations/seed + app
+#   docker compose down              # stop (keeps data volume)
+#   docker compose down -v           # stop and wipe the database
+#
+# Override any secret via a sibling .env file or the shell environment.
+
+x-db-env: &db-env
+  POSTGRES_USER: ${POSTGRES_USER:-bgv}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bgv}
+  POSTGRES_DB: ${POSTGRES_DB:-bgv}
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      <<: *db-env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bgv} -d ${POSTGRES_DB:-bgv}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # No `ports:` mapping — Postgres is not published to the host. Use
+    # `docker compose exec db psql -U bgv` for a shell, or uncomment below
+    # if you want host tools (Prisma Studio, psql) to reach it.
+    # ports:
+    #   - "5432:5432"
+
+  migrate:
+    build:
+      context: .
+      target: builder
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-bgv}:${POSTGRES_PASSWORD:-bgv}@db:5432/${POSTGRES_DB:-bgv}?schema=public
+      STORAGE_PROVIDER: local
+      STORAGE_LOCAL_DIR: /app/storage
+    volumes:
+      - app-storage:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-bgv}:${POSTGRES_PASSWORD:-bgv}@db:5432/${POSTGRES_DB:-bgv}?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:-dev-only-change-me-to-a-long-random-string}
+      CRON_SECRET: ${CRON_SECRET:-dev-only-change-me-to-a-long-random-string}
+      KYC_PROVIDER: ${KYC_PROVIDER:-mock}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
+      WHATSAPP_PROVIDER: ${WHATSAPP_PROVIDER:-console}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      STORAGE_LOCAL_DIR: /app/storage
+      # Extra hosts allowed to submit Server Action forms (login, onboarding)
+      # when the app is reached through a proxy/tunnel rather than localhost.
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+    volumes:
+      - app-storage:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
+  app-storage:

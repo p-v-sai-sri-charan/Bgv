@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { IconShieldCheck } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState, PageHeader } from "@/components/ui/page-header";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui/table";
 import { TENANT_CATEGORY_LABELS } from "@/lib/flow-config";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
@@ -51,54 +54,63 @@ export default async function AgentQueuePage() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pending manual review ({rows.length} cases)</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {rows.length === 0 ? (
-          <p className="text-sm text-slate-500">
-            Nothing waiting for manual review right now.
-          </p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 text-left text-slate-500">
-                <th className="pb-2 font-medium">Employee</th>
-                <th className="pb-2 font-medium">Employer</th>
-                <th className="pb-2 font-medium">Pending items</th>
-                <th className="pb-2 font-medium">Waiting since</th>
-                <th className="pb-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.caseId} className="border-b border-slate-100">
-                  <td className="py-2">{row.employeeName}</td>
-                  <td className="py-2">
-                    {row.tenantName}{" "}
-                    <Badge tone="neutral" className="ml-1">
-                      {row.category}
-                    </Badge>
-                  </td>
-                  <td className="py-2">{row.count}</td>
-                  <td className="py-2">
-                    {row.oldest.toLocaleDateString("en-IN")}
-                  </td>
-                  <td className="py-2 text-right">
-                    <Link
-                      href={`/agent/cases/${row.caseId}`}
-                      className="text-sm font-medium text-slate-700 hover:underline"
-                    >
-                      Review
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <PageHeader
+        title="Review queue"
+        description="Documents waiting on your manual sign-off, oldest first."
+      />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Pending manual review ({rows.length} cases)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {rows.length === 0 ? (
+            <EmptyState
+              title="Queue clear"
+              description="Nothing is waiting for manual review right now."
+              icon={<IconShieldCheck />}
+            />
+          ) : (
+            <Table>
+              <Thead>
+                <Th>Employee</Th>
+                <Th>Employer</Th>
+                <Th>Pending items</Th>
+                <Th>Waiting since</Th>
+                <Th className="text-right">Action</Th>
+              </Thead>
+              <Tbody>
+                {rows.map((row) => (
+                  <Tr key={row.caseId}>
+                    <Td className="font-medium">{row.employeeName}</Td>
+                    <Td>
+                      <span className="text-muted-foreground">
+                        {row.tenantName}
+                      </span>{" "}
+                      <Badge tone="neutral" className="ml-1">
+                        {row.category}
+                      </Badge>
+                    </Td>
+                    <Td>{row.count}</Td>
+                    <Td className="text-muted-foreground">
+                      {row.oldest.toLocaleDateString("en-IN")}
+                    </Td>
+                    <Td className="text-right">
+                      <Link
+                        href={`/agent/cases/${row.caseId}`}
+                        className="text-[13px] font-medium text-brand-600 hover:text-brand-700"
+                      >
+                        Review
+                      </Link>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

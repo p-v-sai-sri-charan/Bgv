@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { IconFileCheck } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState, PageHeader } from "@/components/ui/page-header";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/rbac";
 import { CASE_STATUS_LABELS, CASE_STATUS_TONE } from "@/lib/status-labels";
@@ -15,57 +18,66 @@ export default async function EmployerCasesPage() {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Verification cases ({cases.length})</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {cases.length === 0 ? (
-          <p className="text-sm text-slate-500">No cases yet.</p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 text-left text-slate-500">
-                <th className="pb-2 font-medium">Employee</th>
-                <th className="pb-2 font-medium">Status</th>
-                <th className="pb-2 font-medium">Re-verification</th>
-                <th className="pb-2 font-medium">Initiated</th>
-                <th className="pb-2 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {cases.map((c) => (
-                <tr key={c.id} className="border-b border-slate-100">
-                  <td className="py-2">{c.employee.fullName}</td>
-                  <td className="py-2">
-                    <Badge tone={CASE_STATUS_TONE[c.status]}>
-                      {CASE_STATUS_LABELS[c.status]}
-                    </Badge>
-                  </td>
-                  <td className="py-2">
-                    {c.isReverification ? (
-                      <Badge tone="info">Re-verification</Badge>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="py-2">
-                    {c.initiatedAt.toLocaleDateString("en-IN")}
-                  </td>
-                  <td className="py-2 text-right">
-                    <Link
-                      href={`/employer/cases/${c.id}`}
-                      className="text-sm font-medium text-slate-700 hover:underline"
-                    >
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <PageHeader
+        title="Verification cases"
+        description="Every case for your organisation, newest first."
+      />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Cases ({cases.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {cases.length === 0 ? (
+            <EmptyState
+              title="No cases yet"
+              description="Onboard an employee to open the first verification case."
+              icon={<IconFileCheck />}
+            />
+          ) : (
+            <Table>
+              <Thead>
+                <Th>Employee</Th>
+                <Th>Status</Th>
+                <Th>Re-verification</Th>
+                <Th>Initiated</Th>
+                <Th className="text-right">Case</Th>
+              </Thead>
+              <Tbody>
+                {cases.map((c) => (
+                  <Tr key={c.id}>
+                    <Td className="font-medium">{c.employee.fullName}</Td>
+                    <Td>
+                      <Badge tone={CASE_STATUS_TONE[c.status]} dot>
+                        {CASE_STATUS_LABELS[c.status]}
+                      </Badge>
+                    </Td>
+                    <Td>
+                      {c.isReverification ? (
+                        <Badge tone="info">Re-verification</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </Td>
+                    <Td className="text-muted-foreground">
+                      {c.initiatedAt.toLocaleDateString("en-IN")}
+                    </Td>
+                    <Td className="text-right">
+                      <Link
+                        href={`/employer/cases/${c.id}`}
+                        className="text-[13px] font-medium text-brand-600 hover:text-brand-700"
+                      >
+                        View
+                      </Link>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

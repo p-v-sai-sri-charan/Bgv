@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname === "/login" && session) {
+  if (pathname.startsWith("/login") && session) {
     return NextResponse.redirect(
       new URL(ROLE_PREFIX[session.role], request.url),
     );
@@ -49,6 +49,7 @@ export const config = {
     "/employer/:path*",
     "/employee/:path*",
     "/agent/:path*",
+    "/login/:path*",
     "/login",
   ],
 };

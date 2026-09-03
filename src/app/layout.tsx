@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BGV Platform",
-  description: "Multi-tenant background verification platform",
+  title: {
+    default: "Verifi — Background verification, done right",
+    template: "%s · Verifi",
+  },
+  description:
+    "Multi-tenant background verification platform for MNCs, retail, banking, fuel and industrial hiring — automated KYC, human sign-off, annual re-verification.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -23,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-slate-900">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         {children}
       </body>
     </html>

@@ -1,4 +1,7 @@
+import { IconUserCog } from "@/components/icons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState, PageHeader } from "@/components/ui/page-header";
+import { Table, Tbody, Td, Th, Thead, Tr } from "@/components/ui/table";
 import { prisma } from "@/lib/prisma";
 import { AgentForm } from "./agent-form";
 
@@ -10,6 +13,11 @@ export default async function AdminAgentsPage() {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Verification agents"
+        description="Agents work the manual review queue and sign off documents."
+      />
+
       <AgentForm />
 
       <Card>
@@ -18,24 +26,26 @@ export default async function AdminAgentsPage() {
         </CardHeader>
         <CardContent>
           {agents.length === 0 ? (
-            <p className="text-sm text-slate-500">No agents yet.</p>
+            <EmptyState
+              title="No agents yet"
+              description="Add an agent above to start clearing the review queue."
+              icon={<IconUserCog />}
+            />
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-200 text-left text-slate-500">
-                  <th className="pb-2 font-medium">Name</th>
-                  <th className="pb-2 font-medium">Email</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table>
+              <Thead>
+                <Th>Name</Th>
+                <Th>Email</Th>
+              </Thead>
+              <Tbody>
                 {agents.map((agent) => (
-                  <tr key={agent.id} className="border-b border-slate-100">
-                    <td className="py-2">{agent.name}</td>
-                    <td className="py-2">{agent.email}</td>
-                  </tr>
+                  <Tr key={agent.id}>
+                    <Td className="font-medium">{agent.name}</Td>
+                    <Td className="text-muted-foreground">{agent.email}</Td>
+                  </Tr>
                 ))}
-              </tbody>
-            </table>
+              </Tbody>
+            </Table>
           )}
         </CardContent>
       </Card>

@@ -2,15 +2,19 @@ import { cn } from "@/lib/utils";
 
 export function Card({
   className,
+  interactive = false,
   children,
 }: {
   className?: string;
+  interactive?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-slate-200 bg-white shadow-sm",
+        "rounded-xl border border-border bg-surface shadow-sm",
+        interactive &&
+          "transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md",
         className,
       )}
     >
@@ -27,7 +31,12 @@ export function CardHeader({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("border-b border-slate-200 px-5 py-4", className)}>
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 border-b border-border px-5 py-4",
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -41,7 +50,12 @@ export function CardTitle({
   children: React.ReactNode;
 }) {
   return (
-    <h3 className={cn("text-sm font-semibold text-slate-900", className)}>
+    <h3
+      className={cn(
+        "text-sm font-semibold tracking-tight text-foreground",
+        className,
+      )}
+    >
       {children}
     </h3>
   );

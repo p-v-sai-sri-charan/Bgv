@@ -1,0 +1,35 @@
+# Database-only stack for local development.
+#
+# Runs just PostgreSQL in Docker and publishes it on localhost:5432 so you can
+# run `npm run dev`, `npx prisma migrate dev`, `npx prisma studio`, etc. on the
+# host without ever installing Postgres locally.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   cp .env.example .env        # DATABASE_URL already points at localhost:5432
+#   npx prisma migrate dev
+#   npx prisma db seed
+#   npm run dev
+#
+#   docker compose -f docker-compose.dev.yml down       # stop (keeps data)
+#   docker compose -f docker-compose.dev.yml down -v    # stop + wipe data
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-bgv}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - bgv-dev-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-bgv}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  bgv-dev-db:

@@ -131,6 +131,17 @@ async function seedEmployeeWithCase(
     agentId?: string;
   },
 ) {
+  // Idempotency: the scenario rows below use create() (not upsert), so bail
+  // out if this employee was already seeded — makes `prisma db seed` and the
+  // docker-compose `migrate` service safe to run on every `up`.
+  const existingUser = await prisma.user.findUnique({
+    where: { email: input.email },
+  });
+  if (existingUser) {
+    console.log(`  - ${input.email} already seeded, skipping`);
+    return;
+  }
+
   const passwordHash = await hashPassword(SEED_PASSWORD);
   const user = await prisma.user.create({
     data: {
